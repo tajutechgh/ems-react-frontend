@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {deleteEmployee,listEmployees } from '../services/EmployeeService'
 import { useNavigate } from 'react-router-dom'
 import { listDepartments } from '../services/DepartmentService'
+import { isAdminUser } from '../services/AuthService';
 
 const ListEmployeesComponent = () => {
 
@@ -9,6 +10,8 @@ const ListEmployeesComponent = () => {
     const [departments, setDepartments] = useState([]);
 
     const navigator = useNavigate();
+
+    const isAdmin = isAdminUser();
 
     useEffect(() => {
     
@@ -71,7 +74,12 @@ const ListEmployeesComponent = () => {
     return (
         <div className="container">
             <h2 className="mb-3 mt-3 text-center">List of Employees</h2>
-            <button className='btn btn-primary mb-2 bi bi-database-add' onClick={addNewEmployee}> Add Employee</button>
+
+            {
+                isAdmin &&
+                <button className='btn btn-primary mb-2 bi bi-database-add' onClick={addNewEmployee}> Add Employee</button>                
+            }
+            
             <table className="table table-striped table-bordered">
                 <thead>
                     <tr>
@@ -80,7 +88,10 @@ const ListEmployeesComponent = () => {
                     <th scope="col">Last Name</th>
                     <th scope="col">Email Address</th>
                     <th scope="col">Department</th>
-                    <th scope="col" width="20%">Action</th>
+                    {
+                        isAdmin &&
+                        <th scope="col" width="20%">Action</th>
+                    }
                     </tr>
                 </thead>
                 <tbody>
@@ -92,10 +103,19 @@ const ListEmployeesComponent = () => {
                                 <td>{employee.lastName}</td>
                                 <td>{employee.email}</td>
                                 <td>{getDepartmentName(employee.departmentId)}</td>
-                                <td>
-                                    <button className='btn btn-info bi bi-pencil-square' onClick={() => updateEmployee(employee.id)}> Update</button>
-                                    <button className='btn btn-danger bi bi-trash' onClick={() => removeEmployee(employee.id)} style={{marginLeft: '10px'}}> Delete</button>
-                                </td>
+                                {
+                                    isAdmin &&
+                                    <td>
+                                        {
+                                            isAdmin &&
+                                            <button className='btn btn-info bi bi-pencil-square' onClick={() => updateEmployee(employee.id)}> Update</button>
+                                        }
+                                        {
+                                            isAdmin &&
+                                            <button className='btn btn-danger bi bi-trash' onClick={() => removeEmployee(employee.id)} style={{marginLeft: '10px'}}> Delete</button>
+                                        }
+                                    </td>
+                                }
                             </tr>
                         )
                     }
