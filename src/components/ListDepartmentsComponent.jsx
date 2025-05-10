@@ -8,6 +8,16 @@ const ListDepartmentsComponent = () => {
 
       const navigator = useNavigate();
 
+      //pagination
+      const [currentPage, setCurrentPage] = useState(1);
+      const departmentsPerPage = 10;
+      const lastIndex = currentPage * departmentsPerPage;
+      const firstIndex = lastIndex - departmentsPerPage;
+      const records = departments.slice(firstIndex, lastIndex);
+      const npages = Math.ceil(departments.length / departmentsPerPage);
+      const pageNumbers = [...Array(npages + 1).keys()].slice(1);
+      //end pagination
+
       useEffect(() => {
             getAllDepartments();
       }, [])
@@ -63,7 +73,7 @@ const ListDepartmentsComponent = () => {
                       </thead>
                       <tbody>
                         {
-                              departments.map( department => 
+                              records.map( department => 
                                     <tr key={department.id}>
                                           <td>{department.id}</td>
                                           <td>{department.departmentName}</td>
@@ -77,8 +87,46 @@ const ListDepartmentsComponent = () => {
                         }
                       </tbody>
                   </table>
+                  <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-center">
+                              <li className="page-item">
+                                    <a className="page-link" href="#" onClick={prevPage}>Previous</a>
+                              </li>
+                              {
+                                    pageNumbers.map((pageNum, index) => (
+                                          <li className={"page-item ${currentPage === pageNum ? 'active' : ''}"} key={index}>
+                                                <a className="page-link" href="#" onClick={() => changeCurrentPage(pageNum)}>{pageNum}</a>
+                                          </li>
+                                    ))
+                              }
+                              <li className="page-item">
+                                    <a className="page-link" href="#" onClick={nextPage}>Next</a>
+                              </li>
+                        </ul>
+                  </nav>  
             </div>
       )
+      
+      function prevPage() {
+
+            if (currentPage !== 1) {
+
+                  setCurrentPage(currentPage - 1);
+            }
+      }
+
+      function changeCurrentPage(id){
+            
+            setCurrentPage(id); 
+      }
+
+      function nextPage() {
+
+            if (currentPage !== npages) {
+
+                  setCurrentPage(currentPage + 1);
+            }
+      }
 }
 
 export default ListDepartmentsComponent

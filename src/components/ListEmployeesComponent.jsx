@@ -13,6 +13,16 @@ const ListEmployeesComponent = () => {
 
     const isAdmin = isAdminUser();
 
+    //pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const employeesPerPage = 10;
+    const lastIndex = currentPage * employeesPerPage;
+    const firstIndex = lastIndex - employeesPerPage;
+    const records = employees.slice(firstIndex, lastIndex);
+    const npages = Math.ceil(employees.length / employeesPerPage);
+    const pageNumbers = [...Array(npages + 1).keys()].slice(1);
+    //end pagination
+
     useEffect(() => {
     
         listDepartments().then((response) => {
@@ -96,7 +106,7 @@ const ListEmployeesComponent = () => {
                 </thead>
                 <tbody>
                     {
-                        employees.map(employee =>
+                        records.map(employee =>
                             <tr key={employee.id}>
                                 <th scope="row">{employee.id}</th>
                                 <td>{employee.firstName}</td>
@@ -121,8 +131,46 @@ const ListEmployeesComponent = () => {
                     }
                 </tbody>
             </table>
+            <nav aria-label="Page navigation example">
+                <ul className="pagination justify-content-center">
+                    <li className="page-item">
+                            <a className="page-link" href="#" onClick={prevPage}>Previous</a>
+                    </li>
+                    {
+                            pageNumbers.map((pageNum, index) => (
+                                <li className={"page-item ${currentPage === pageNum ? 'active' : ''}"} key={index}>
+                                        <a className="page-link" href="#" onClick={() => changeCurrentPage(pageNum)}>{pageNum}</a>
+                                </li>
+                            ))
+                    }
+                    <li className="page-item">
+                            <a className="page-link" href="#" onClick={nextPage}>Next</a>
+                    </li>
+                </ul>
+            </nav>  
         </div>
     )
+
+    function prevPage() {
+
+        if (currentPage !== 1) {
+
+            setCurrentPage(currentPage - 1);
+        }
+    }
+
+    function changeCurrentPage(id){
+        
+        setCurrentPage(id); 
+    }
+
+    function nextPage() {
+
+        if (currentPage !== npages) {
+
+            setCurrentPage(currentPage + 1);
+        }
+    }
 }
 
 export default ListEmployeesComponent
